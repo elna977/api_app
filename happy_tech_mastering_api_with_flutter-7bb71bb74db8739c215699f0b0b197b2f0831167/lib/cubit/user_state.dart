@@ -1,4 +1,6 @@
- class UserState {}
+ import 'package:happy_tech_mastering_api_with_flutter/model/getUserData.dart';
+
+class UserState {}
 
 final class UserInitial extends UserState {}
  final class UploadProfilePic extends UserState {}
@@ -19,4 +21,15 @@ final class UserInitial extends UserState {}
    final String erromessage;
 
    SignUpFaliuer({required this.erromessage});
+ }
+ final class UserDataLoading extends UserState {}
+ final class UserDataSucsses extends UserState {
+  final GetUserDataModel userdata;
+
+  UserDataSucsses({required this.userdata});
+ }
+ final class UserDataFaliuer extends UserState {
+   final String erromessage;
+
+   UserDataFaliuer({required this.erromessage});
  }

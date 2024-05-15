@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:happy_tech_mastering_api_with_flutter/cache/cache_helper.dart';
 import 'package:happy_tech_mastering_api_with_flutter/core/functions/upload_image_to_api.dart';
 import 'package:happy_tech_mastering_api_with_flutter/cubit/user_state.dart';
+import 'package:happy_tech_mastering_api_with_flutter/model/getUserData.dart';
 import 'package:happy_tech_mastering_api_with_flutter/model/signUpModel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -23,7 +24,7 @@ class UserCubit extends Cubit<UserState> {
   //Sign Up Form key
   GlobalKey<FormState> signUpFormKey = GlobalKey();
   //Profile Pic
-  XFile? profilePic;
+  XFile?  profilePic;
   //Sign up name
   TextEditingController signUpName = TextEditingController();
   //Sign up phone number
@@ -81,6 +82,17 @@ class UserCubit extends Cubit<UserState> {
       emit(SignInSucsses());
     }on ServerException catch(e){
       emit(SignInFaliuer(erromessage: e.errorModel.errormessage));
+    }
+  }
+  GetUserData()async {
+    try{
+      emit(UserDataLoading());
+      final response =await api.get(
+        EndPoint.getUserData(CacheHelper().getData(key: ApiKeys.id)),
+      );
+      emit(UserDataSucsses(userdata: GetUserDataModel.fromJson(response)));
+    }on ServerException catch (e){
+      UserDataFaliuer(erromessage: e.errorModel.errormessage);
     }
   }
 }
