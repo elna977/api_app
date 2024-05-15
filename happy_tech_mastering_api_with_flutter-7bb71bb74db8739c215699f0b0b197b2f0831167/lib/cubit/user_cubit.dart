@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:happy_tech_mastering_api_with_flutter/cache/cache_helper.dart';
 import 'package:happy_tech_mastering_api_with_flutter/cubit/user_state.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -45,7 +46,8 @@ class UserCubit extends Cubit<UserState> {
       user =SignInModel.formJson(response);
       final decodedToken =JwtDecoder.decode(user!.token);
       //id
-      print(decodedToken['id']);
+      CacheHelper().saveData(key: ApiKeys.token, value: user!.token);
+      CacheHelper().saveData(key: ApiKeys.id, value: decodedToken[ApiKeys.id]);
       emit(SignInSucsses());
     }on ServerException catch(e){
       emit(SignInFaliuer(erromessage: e.errorModel.errormessage));
