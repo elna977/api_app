@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:happy_tech_mastering_api_with_flutter/cache/cache_helper.dart';
+import 'package:happy_tech_mastering_api_with_flutter/core/functions/upload_image_to_api.dart';
 import 'package:happy_tech_mastering_api_with_flutter/cubit/user_state.dart';
+import 'package:happy_tech_mastering_api_with_flutter/model/signUpModel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import '../core/api/api_consumer.dart';
@@ -33,6 +35,34 @@ class UserCubit extends Cubit<UserState> {
   //Sign up confirm password
   TextEditingController confirmPassword = TextEditingController();
   SignInModel? user;
+  UploadImage(XFile image){
+    profilePic =image;
+    emit(UploadProfilePic());
+  }
+  SignUp()async{
+    try{
+      emit(SignUpLoading());
+      final response =await api.post(
+        EndPoint.signUp,
+        isFormData: true,
+        data: {
+          ApiKeys.name :signUpName.toString(),
+          ApiKeys.email :signUpEmail.toString(),
+          ApiKeys.phone :signUpPhoneNumber.toString(),
+          ApiKeys.password :signUpPassword.toString(),
+          ApiKeys.confirmPassword :confirmPassword.toString(),
+          ApiKeys.location :{"name":"methalfa","address":"meet halfa","coordinates":[30.1572709,31.224779]},
+          ApiKeys.profilePic : await UploadImageToApi(profilePic!),
+        }
+      );
+      final signUpModel =SignUpModel.fromJson(response);
+      emit(SignUpSucsses(
+        message: signUpModel.message
+      ));
+    }on ServerException catch(e){
+      emit(SignUpFaliuer(erromessage: e.errorModel.errormessage));
+    }
+  }
   signIn() async{
     try{
       emit(SignInLoading());
